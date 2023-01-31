@@ -22,8 +22,7 @@ class MyPipelineStack(Stack):
                             input=pipelines.CodePipelineSource.connection("marcelcastrobr/cdk-sagemaker-custom-image", "main",
                                 connection_arn='arn:aws:codestar-connections:eu-west-1:656001362760:connection/2a1bfdaa-d478-45c4-97e7-9421595608b4'
                                 ),
-                            commands=["npm install -g aws-cdk", 
-                                "python -m pip install -r requirements.txt", 
-                                "cdk synth"]
+                            install_commands=["pip install -r requirements.txt"],
+                            commands=["cd container", "./buil_and_attach_image.sh"]
                         )
                     )
