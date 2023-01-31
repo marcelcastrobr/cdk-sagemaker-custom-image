@@ -11,12 +11,6 @@ class MyPipelineStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-
-        role = iam.Role(self, "SomeRole", assumed_by=iam.AccountRootPrincipal())
-        secret = secretsmanager.Secret(self, "github-secret")
-        secret.grant_read(role)
-        secret.grant_write(role)
-
         pipeline =  pipelines.CodePipeline(self, "Pipeline",
                         synth=pipelines.ShellStep("Synth", 
                             input=pipelines.CodePipelineSource.connection("marcelcastrobr/cdk-sagemaker-custom-image", "main",
