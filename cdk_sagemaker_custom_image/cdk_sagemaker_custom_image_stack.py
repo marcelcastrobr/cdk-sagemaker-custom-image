@@ -23,6 +23,7 @@ class MyPipelineStack(Stack):
                                 connection_arn='arn:aws:codestar-connections:eu-west-1:656001362760:connection/2a1bfdaa-d478-45c4-97e7-9421595608b4'
                                 ),
                             install_commands=["pip install -r requirements.txt"],
-                            commands=["cd container", "./buil_and_attach_image.sh"]
+                            commands=["cd container", "chmod +x buil_and_attach_image.sh", 
+                            "ls -lh", "./buil_and_attach_image.sh"]
                         )
                     )
