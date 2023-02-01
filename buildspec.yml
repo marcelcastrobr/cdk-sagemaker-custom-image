@@ -19,11 +19,26 @@ phases:
       - echo Build started on `date`
       - cd custom-poetry
       - echo Building the Docker image...
-      - docker build -t ${IMAGE_NAME} .
-      #- docker build . -t ${IMAGE_NAME} -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
+      # - docker build -t ${IMAGE_NAME} .
+      - docker build . -t ${IMAGE_NAME} -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
+      - echo Pushing the Docker image...
+      - docker push ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Pushing the Docker image...
-      - cd custom-poetry
-      #- docker push ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
+      - echo "Using it with SageMaker Studio"
+      - aws --region ${REGION} sagemaker create-image-version --image-name ${IMAGE_NAME} --base-image "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}"
+      # Verify the image-version is created successfully. Do NOT proceed if image-version is in CREATE_FAILED state or in any other state apart from CREATED.
+      - IMAGE_VERSION=$(aws --region ${REGION} sagemaker describe-image-version --image-name ${IMAGE_NAME}| jq -r '.Version')
+      - echo "IMAGE_VERSION=$IMAGE_VERSION"
+      - echo "Create an AppImageConfig for this image."
+      - aws --region ${REGION} sagemaker delete-app-image-config --app-image-config-name custom-poetry-kernel-image-config
+      - sed 's/<image-version>/'"$IMAGE_VERSION"'/' app-image-config-input.json > app-image-config-input-mod.json
+      - aws --region ${REGION} sagemaker create-app-image-config --cli-input-json file://app-image-config-input-mod.json
+      - echo "Update SageMaker Domain"
+      # inject your DOMAIN_ID into the configuration file
+      - sed 's/<domain-id>/'"$DOMAIN_ID"'/' update-domain-input.json > update-domain-input-mod.json
+      - aws --region ${REGION} sagemaker update-domain --cli-input-json file://update-domain-input-mod.json
+
+
+      
