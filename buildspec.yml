@@ -26,7 +26,9 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo "Using it with SageMaker Studio"
+      - aws --region ${REGION} sagemaker create-image --image-name ${IMAGE_NAME} --role-arn ${ROLE_ARN}
       - aws --region ${REGION} sagemaker create-image-version --image-name ${IMAGE_NAME} --base-image "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}"
+
       # Verify the image-version is created successfully. Do NOT proceed if image-version is in CREATE_FAILED state or in any other state apart from CREATED.
       - IMAGE_VERSION=$(aws --region ${REGION} sagemaker describe-image-version --image-name ${IMAGE_NAME}| jq -r '.Version')
       - echo "IMAGE_VERSION=$IMAGE_VERSION"
@@ -34,6 +36,7 @@ phases:
       - aws --region ${REGION} sagemaker delete-app-image-config --app-image-config-name custom-poetry-kernel-image-config
       - sed 's/<image-version>/'"$IMAGE_VERSION"'/' app-image-config-input.json > app-image-config-input-mod.json
       - aws --region ${REGION} sagemaker create-app-image-config --cli-input-json file://app-image-config-input-mod.json
+      
       - echo "Update SageMaker Domain"
       - DOMAIN_ID=$(aws --region ${REGION} sagemaker list-domains | jq -r '.Domains' | jq -r '.[]|.DomainId')
       # inject your DOMAIN_ID into the configuration file
