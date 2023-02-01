@@ -10,7 +10,7 @@ phases:
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
       - REGION=$AWS_DEFAULT_REGION
       - ACCOUNT_ID=$(aws sts get-caller-identity | jq -r '.Account')
-      - IMAGE_NAME=custom-poetry-kernel
+      - IMAGE_NAME=custom-poetry-kernel-v2
       - echo "ACCOUNT_ID=${ACCOUNT_ID}"
       - echo "REGION=${REGION}"
       - echo "IMAGE_NAME=${IMAGE_NAME}"
@@ -18,10 +18,10 @@ phases:
     commands:
       - echo Build started on `date`
       - cd custom-poetry
-      #- echo Building the Docker image...
-      #- docker build . -t ${IMAGE_NAME} -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
-      #- echo Pushing the Docker image...
-      #- docker push ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
+      - echo Building the Docker image...
+      - docker build . -t ${IMAGE_NAME} -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
+      - echo Pushing the Docker image...
+      - docker push ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
   post_build:
     commands:
       - echo Build completed on `date`
