@@ -17,12 +17,11 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - cd custom-poetry
-      - echo Building the Docker image...
-      # - docker build -t ${IMAGE_NAME} .
-      - docker build . -t ${IMAGE_NAME} -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
-      - echo Pushing the Docker image...
-      - docker push ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
+      #- cd custom-poetry
+      #- echo Building the Docker image...
+      #- docker build . -t ${IMAGE_NAME} -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
+      #- echo Pushing the Docker image...
+      #- docker push ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
   post_build:
     commands:
       - echo Build completed on `date`
@@ -36,6 +35,7 @@ phases:
       - sed 's/<image-version>/'"$IMAGE_VERSION"'/' app-image-config-input.json > app-image-config-input-mod.json
       - aws --region ${REGION} sagemaker create-app-image-config --cli-input-json file://app-image-config-input-mod.json
       - echo "Update SageMaker Domain"
+      - DOMAIN_ID=$(aws --region ${REGION} sagemaker list-domains | jq -r '.Domains' | jq -r '.[]|.DomainId')
       # inject your DOMAIN_ID into the configuration file
       - sed 's/<domain-id>/'"$DOMAIN_ID"'/' update-domain-input.json > update-domain-input-mod.json
       - aws --region ${REGION} sagemaker update-domain --cli-input-json file://update-domain-input-mod.json
