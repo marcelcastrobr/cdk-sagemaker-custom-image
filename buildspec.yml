@@ -17,10 +17,11 @@ phases:
       - cd custom-poetry
       - ls -lh
       - echo Building the Docker image...
-      - docker build . -t ${IMAGE_NAME} -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
+      - docker build -t ${IMAGE_NAME} .
+      #- docker build . -t ${IMAGE_NAME} -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - cd custom-poetry
-      - docker push ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
+      #- docker push ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
