@@ -18,7 +18,6 @@ phases:
     commands:
       - echo Build started on `date`
       - cd custom-poetry
-      - ls -lh
       - echo Building the Docker image...
       - docker build -t ${IMAGE_NAME} .
       #- docker build . -t ${IMAGE_NAME} -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
