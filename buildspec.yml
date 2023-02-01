@@ -26,6 +26,8 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo "Using it with SageMaker Studio"
+      # Role in your account to be used for the SageMaker Image
+      - ROLE_ARN=arn:aws:iam::656001362760:role/service-role/AmazonCodeBuild-ServiceRole-CustomImage
       - aws --region ${REGION} sagemaker create-image --image-name ${IMAGE_NAME} --role-arn ${ROLE_ARN}
       - aws --region ${REGION} sagemaker create-image-version --image-name ${IMAGE_NAME} --base-image "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}"
 
