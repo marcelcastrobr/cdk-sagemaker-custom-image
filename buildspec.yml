@@ -1,18 +1,23 @@
 version: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      java: corretto11
   pre_build:
     commands:
-      - echo Nothing to do in the pre_build phase...
+      - echo Logging in to Amazon ECR..
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - REGION=$AWS_DEFAULT_REGION
+      - ACCOUNT_ID=$(aws sts get-caller-identity | jq -r '.Account')
+      - IMAGE_NAME=custom-poetry-kernel
+      - echo "ACCOUNT_ID=${ACCOUNT_ID}"
+      - echo "REGION=${REGION}"
+      - echo "IMAGE_NAME=${IMAGE_NAME}"
   build:
     commands:
       - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build . -t ${IMAGE_NAME} -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME} --platform=linux/amd64
   post_build:
     commands:
       - echo Build completed on `date`
-artifacts:
-  files:
-    - target/messageUtil-1.0.jar
+      - echo Pushing the Docker image...
+      - docker push ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
